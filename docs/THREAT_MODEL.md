@@ -74,8 +74,11 @@ estrictamente local se acepta; si se expone en red, hay que fijar la IP.
 
 ### 4. XSS y salida insegura del modelo (OWASP LLM02)
 
-- El frontend renderiza Markdown **sin HTML crudo** (`rehype-sanitize`).
-- El servidor elimina etiquetas peligrosas y enlaces `javascript:`/`data:`.
+- El renderizador de Markdown **no interpreta HTML crudo** (`react-markdown`
+  sin `rehype-raw`).
+- Toda URL pasa por una lista blanca de protocolos (`http`, `https`, `mailto`
+  y anclas internas); `javascript:` y `data:` se descartan.
+- El servidor ademas elimina etiquetas peligrosas y enlaces ejecutables.
 - Las citas y titulos se escapan y se muestran como texto plano.
 - CSP restrictiva con `object-src 'none'` y `base-uri 'none'`.
 

@@ -18,11 +18,19 @@ MVP en desarrollo activo:
 - [x] Extracción con páginas (PDF), diapositivas (PPTX), estilos (DOCX), webs y YouTube
 - [x] Índice híbrido local (FTS5 + embeddings)
 - [x] Chat con respuestas en streaming y citas clicables
-- [ ] Interfaz web (en diseño)
+- [x] Interfaz web con tema claro y oscuro, visor de PDF y panel de fuentes
 - [ ] Resúmenes y esquemas
 - [ ] Flashcards con repaso espaciado
 - [ ] Cuestionarios y simulacro de examen
 - [ ] Plan de estudio
+
+## Capturas
+
+| Tema claro | Tema oscuro |
+|---|---|
+| ![Chat en tema claro](docs/screenshots/chat-claro.png) | ![Chat en tema oscuro](docs/screenshots/chat-oscuro.png) |
+
+![Panel de fuentes con visor de PDF](docs/screenshots/panel-fuente.png)
 
 ## Qué incluye
 
@@ -128,10 +136,29 @@ tests/          pruebas unitarias y de integracion
 ## Desarrollo
 
 ```bash
-.venv/bin/python -m pytest -q          # pruebas
+.venv/bin/python -m pytest -q          # pruebas del backend
 .venv/bin/ruff check backend tests      # estilo
-python scripts/smoke_test.py            # prueba de extremo a extremo
+python scripts/smoke_test.py            # indice y busqueda de extremo a extremo
 ```
+
+### Interfaz
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://127.0.0.1:5173 con proxy al backend
+npm run build      # genera frontend/dist, que sirve FastAPI
+```
+
+Prueba visual automatizada (sin gastar tokens):
+
+```bash
+cd frontend && npx playwright install chromium && cd ..
+./scripts/ui_test.sh
+```
+
+Levanta un proveedor de IA falso (`scripts/mock_llm.py`), indexa un PDF de
+ejemplo y comprueba que el chat, las citas y el panel de fuentes funcionan.
 
 ## Seguridad
 

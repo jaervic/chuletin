@@ -20,6 +20,7 @@ logger = logging.getLogger("chuletin")
 CSP = (
     "default-src 'self'; "
     "img-src 'self' data: blob:; "
+    "font-src 'self' data:; "
     "style-src 'self' 'unsafe-inline'; "
     "script-src 'self'; "
     "connect-src 'self'; "

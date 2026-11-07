@@ -2,23 +2,190 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  :root {
+    --paper: 244 238 226;
+    --raised: 253 250 244;
+    --ink: 34 29 23;
+    --muted: 109 99 85;
+    --rule: 226 215 196;
+    --accent: 168 93 32;
+    --accent-ink: 255 249 240;
+    --accent-soft: 243 227 202;
+    --highlight: 246 226 162;
+    --danger: 166 61 44;
+    --success: 63 107 74;
+    --shadow: 0 1px 2px rgba(60, 45, 25, 0.07), 0 10px 30px -18px rgba(60, 45, 25, 0.35);
+  }
+
+  [data-theme="dark"] {
+    --paper: 27 25 22;
+    --raised: 37 34 32;
+    --ink: 235 227 213;
+    --muted: 168 157 139;
+    --rule: 58 52 44;
+    --accent: 215 154 92;
+    --accent-ink: 27 25 22;
+    --accent-soft: 56 46 34;
+    --highlight: 74 59 30;
+    --danger: 224 122 102;
+    --success: 134 179 145;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 16px 40px -22px rgba(0, 0, 0, 0.7);
+  }
+
+  html {
+    background-color: rgb(var(--paper));
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] html,
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    margin: 0;
+    min-height: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+    font-variation-settings: "SOFT" 40, "WONK" 1;
+  }
+
+  ::selection {
+    background: rgb(var(--highlight));
+    color: rgb(var(--ink));
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--rule));
+    border-radius: 999px;
+    border: 3px solid rgb(var(--paper));
+  }
 }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+@layer components {
+  .paper-grain {
+    position: relative;
+  }
 
-body {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  .paper-grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background-image: radial-gradient(rgba(120, 98, 64, 0.07) 0.6px, transparent 0.6px);
+    background-size: 4px 4px;
+  }
 
-*:focus-visible {
-  outline: 2px solid #6366f1;
-  outline-offset: 2px;
+  [data-theme="dark"] .paper-grain::before {
+    background-image: radial-gradient(rgba(255, 240, 210, 0.035) 0.6px, transparent 0.6px);
+  }
+
+  .prose-chuletin {
+    @apply text-[15px] leading-7;
+  }
+
+  .prose-chuletin > * + * {
+    @apply mt-3;
+  }
+
+  .prose-chuletin h1,
+  .prose-chuletin h2,
+  .prose-chuletin h3,
+  .prose-chuletin h4 {
+    @apply mt-6 font-serif font-semibold leading-snug text-ink;
+  }
+
+  .prose-chuletin h1 {
+    @apply text-xl;
+  }
+  .prose-chuletin h2 {
+    @apply text-lg;
+  }
+  .prose-chuletin h3 {
+    @apply text-base;
+  }
+
+  .prose-chuletin ul {
+    @apply list-disc space-y-1 pl-5;
+  }
+
+  .prose-chuletin ol {
+    @apply list-decimal space-y-1 pl-5;
+  }
+
+  .prose-chuletin a {
+    @apply text-accent underline decoration-accent/40 underline-offset-2;
+  }
+
+  .prose-chuletin strong {
+    @apply font-semibold text-ink;
+  }
+
+  .prose-chuletin blockquote {
+    @apply border-l-2 border-accent/40 pl-4 italic text-muted;
+  }
+
+  .prose-chuletin code {
+    @apply rounded bg-accent-soft/70 px-1.5 py-0.5 font-mono text-[13px];
+  }
+
+  .prose-chuletin pre {
+    @apply overflow-x-auto rounded-lg border border-rule bg-raised p-4 font-mono text-[13px] leading-6;
+  }
+
+  .prose-chuletin pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .prose-chuletin table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .prose-chuletin th,
+  .prose-chuletin td {
+    @apply border border-rule px-3 py-2 text-left align-top;
+  }
+
+  .prose-chuletin th {
+    @apply bg-accent-soft/50 font-semibold;
+  }
+
+  .prose-chuletin hr {
+    @apply my-6 border-rule;
+  }
+
+  .cita {
+    @apply mx-0.5 inline-flex min-w-[1.35rem] translate-y-[-1px] items-center justify-center rounded px-1 text-[11px] font-semibold leading-5 text-ink;
+    background-color: rgb(var(--highlight));
+    border: 1px solid color-mix(in srgb, rgb(var(--highlight)) 70%, rgb(var(--ink)) 12%);
+  }
+
+  .cita:hover {
+    border-color: rgb(var(--accent));
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
 }

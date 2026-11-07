@@ -73,6 +73,18 @@ export interface ConversationSummary {
   message_count: number;
 }
 
+export interface CitationRecord {
+  id: number;
+  message_id: string;
+  chunk_id: number | null;
+  document_id: string | null;
+  page_from: number | null;
+  page_to: number | null;
+  heading: string | null;
+  score: number | null;
+  snippet: string;
+}
+
 export interface ConversationMessage {
   id: string;
   role: "user" | "assistant";
@@ -81,7 +93,7 @@ export interface ConversationMessage {
   model: string | null;
   latency_ms: number | null;
   created_at: string;
-  citations: Citation[];
+  citations: CitationRecord[];
 }
 
 export interface ProviderPreset {
