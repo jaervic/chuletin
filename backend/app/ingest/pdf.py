@@ -92,7 +92,10 @@ def extract_pdf(
     ocr_max_pages: int = 40,
 ) -> ExtractionResult:
     try:
-        import fitz  # PyMuPDF
+        try:
+            import pymupdf as fitz  # PyMuPDF >= 1.24
+        except ImportError:  # pragma: no cover
+            import fitz
     except ImportError as exc:  # pragma: no cover
         raise ExtractionError("PyMuPDF no esta instalado") from exc
 

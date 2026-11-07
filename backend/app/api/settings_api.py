@@ -41,7 +41,7 @@ def _embedding_status() -> dict:
         pass
     ready = False
     try:
-        ready = any(settings.models_dir.glob("**/*.onnx"))
+        ready = any(settings.models_path.glob("**/*.onnx"))
     except OSError:
         ready = False
     return {"model": model, "dim": dimension, "ready": ready}

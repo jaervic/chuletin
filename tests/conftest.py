@@ -33,7 +33,10 @@ def temp_db(tmp_path, monkeypatch):
 @pytest.fixture()
 def sample_pdf(tmp_path) -> Path:
     """PDF de 3 paginas con texto conocido, generado al vuelo."""
-    import fitz
+    try:
+        import pymupdf as fitz
+    except ImportError:
+        import fitz
 
     path = tmp_path / "apuntes.pdf"
     document = fitz.open()

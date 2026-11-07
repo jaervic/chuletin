@@ -24,10 +24,14 @@ def main() -> int:
 
     workdir = Path(tempfile.mkdtemp(prefix="chuletin-smoke-"))
     settings.data_dir = workdir
+    settings.models_dir = REPO_ROOT / "data" / "models"
     settings.ensure_dirs()
     db.init_db(workdir / "smoke.db")
 
-    import fitz
+    try:
+        import pymupdf as fitz
+    except ImportError:
+        import fitz
 
     pdf_path = workdir / "apuntes.pdf"
     document = fitz.open()

@@ -15,6 +15,24 @@ _TOKEN_RE = re.compile(r"\w+", re.UNICODE)
 MAX_PER_DOCUMENT = 3
 MAX_PER_PAGE = 2
 
+# Palabras vacias que no aportan a la busqueda por palabras clave.
+STOPWORDS = {
+    "que", "qué", "como", "cómo", "cual", "cuál", "cuales", "quiénes", "quien",
+    "quién", "donde", "dónde", "cuando", "cuándo", "porque", "porqué", "para",
+    "por", "con", "sin", "sobre", "entre", "hasta", "desde", "segun", "según",
+    "este", "esta", "esto", "estos", "estas", "ese", "esa", "eso", "esos",
+    "esas", "aquel", "aquella", "los", "las", "del", "una", "uno", "unos",
+    "unas", "sus", "mas", "más", "pero", "sino", "tambien", "también", "solo",
+    "sólo", "muy", "todo", "toda", "todos", "todas", "otro", "otra", "otros",
+    "otras", "cada", "algo", "algun", "algún", "ningun", "ningún", "hay",
+    "tiene", "tienen", "hace", "hacen", "puede", "pueden", "debe", "deben",
+    "fue", "son", "era", "ser", "estar", "está", "dice", "dicen",
+    "explica", "explicar", "define", "definir", "resume", "resumir", "habla",
+    "trata", "the", "and", "for", "with", "what", "which", "who", "how",
+    "why", "when", "where", "does", "did", "are", "was", "were", "from",
+    "this", "that", "these", "those", "about", "into", "your", "you",
+}
+
 
 @dataclass(slots=True)
 class Hit:
@@ -34,7 +52,7 @@ def _fts_match(query: str) -> str:
     tokens: list[str] = []
     seen: set[str] = set()
     for token in _TOKEN_RE.findall(query.lower()):
-        if len(token) < 2 or token in seen:
+        if len(token) < 3 or token in STOPWORDS or token.isdigit() or token in seen:
             continue
         seen.add(token)
         tokens.append(token)
@@ -125,10 +143,19 @@ def _vector_search(
     if not raw:
         return []
 
-    ids = [chunk_id for chunk_id, _ in raw]
-    details = _load_chunks(ids)
+    # Descarta resultados poco parecidos: evita responder con ruido.
+    threshold = settings.min_similarity
+    filtered = []
+    for chunk_id, distance in raw:
+        similarity = 1.0 - (distance ** 2) / 2.0  # vectores normalizados
+        if similarity >= threshold:
+            filtered.append(chunk_id)
+    if not filtered:
+        return []
+
+    details = _load_chunks(filtered)
     ordered: list[int] = []
-    for chunk_id in ids:
+    for chunk_id in filtered:
         row = details.get(chunk_id)
         if row and _in_scope(row, subject_id, document_ids):
             ordered.append(chunk_id)

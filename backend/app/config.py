@@ -29,6 +29,7 @@ class Settings(BaseSettings):
 
     # Datos
     data_dir: Path = REPO_ROOT / "data"
+    models_dir: Path | None = None  # por defecto, data/models
 
     # Limites de ingesta
     max_upload_mb: int = 50
@@ -51,6 +52,8 @@ class Settings(BaseSettings):
     max_question_chars: int = 4000
     max_context_chunks: int = 8
     retrieval_candidates: int = 30
+    # Similitud coseno minima para aceptar un fragmento del indice vectorial.
+    min_similarity: float = 0.40
     llm_timeout_s: int = 120
 
     # OCR
@@ -69,8 +72,8 @@ class Settings(BaseSettings):
         return self.data_dir / "tmp"
 
     @property
-    def models_dir(self) -> Path:
-        return self.data_dir / "models"
+    def models_path(self) -> Path:
+        return Path(self.models_dir) if self.models_dir else self.data_dir / "models"
 
     @property
     def database_path(self) -> Path:
@@ -82,7 +85,7 @@ class Settings(BaseSettings):
 
     def ensure_dirs(self) -> None:
         """Crea los directorios de datos con permisos restrictivos."""
-        for directory in (self.data_dir, self.uploads_dir, self.tmp_dir, self.models_dir):
+        for directory in (self.data_dir, self.uploads_dir, self.tmp_dir, self.models_path):
             directory.mkdir(parents=True, exist_ok=True)
             try:
                 directory.chmod(0o700)

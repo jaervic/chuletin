@@ -82,8 +82,9 @@ def chunk_blocks(
     heading: str | None = None
     carry_text = ""
     carry_page: int | None = None
+    last_page: int | None = None
 
-    def flush() -> None:
+    def flush(keep_carry: bool = True) -> None:
         nonlocal buffer, buffer_len, page_from, page_to, seconds, carry_text, carry_page
         text = "\n\n".join(buffer).strip()
         buffer, buffer_len = [], 0
@@ -99,7 +100,7 @@ def chunk_blocks(
                 seconds=seconds,
             )
         )
-        if len(text) > MIN_CARRY:
+        if keep_carry and len(text) > MIN_CARRY:
             carry_text = _carry_tail(text, overlap_chars)
             carry_page = page_to if page_to is not None else page_from
         else:
@@ -115,6 +116,15 @@ def chunk_blocks(
             continue
         if block.heading:
             heading = block.heading
+
+        # No mezclar paginas en un mismo fragmento: las citas perderian precision.
+        if (
+            block.page is not None
+            and last_page is not None
+            and block.page != last_page
+            and buffer
+        ):
+            flush(keep_carry=False)
 
         for paragraph in _PARAGRAPH_RE.split(block.text):
             paragraph = paragraph.strip()
@@ -133,6 +143,7 @@ def chunk_blocks(
                     page_from = block.page if block.page is not None else block.page
                 if block.page is not None:
                     page_to = block.page
+                    last_page = block.page
                 if seconds is None and block.seconds is not None:
                     seconds = block.seconds
                 if len(chunks) >= max_chunks:

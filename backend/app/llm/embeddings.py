@@ -76,14 +76,14 @@ def load_model():
             return _model
 
         name, dim = _choose_model()
-        settings.models_dir.mkdir(parents=True, exist_ok=True)
+        settings.models_path.mkdir(parents=True, exist_ok=True)
         threads = min(4, max(1, (os.cpu_count() or 4) // 2))
         try:
             from fastembed import TextEmbedding
 
             model = TextEmbedding(
                 model_name=name,
-                cache_dir=str(settings.models_dir),
+                cache_dir=str(settings.models_path),
                 threads=threads,
             )
         except Exception as exc:  # pragma: no cover
@@ -147,5 +147,5 @@ def warmup_async() -> None:
         except Exception:
             pass
 
-    if settings.models_dir.exists():
+    if settings.models_path.exists():
         threading.Thread(target=_run, daemon=True).start()
