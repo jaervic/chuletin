@@ -13,7 +13,7 @@ python-pptx>=1.0,<2.0
 trafilatura>=1.12,<3.0
 yt-dlp>=2024.10.22
 youtube-transcript-api>=1.0,<2.0
-pillow>=10.4,<13.0
+pillow>=13.0.0,<14.0
 pytesseract>=0.3.13,<1.0
 
 # Busqueda e indexado
