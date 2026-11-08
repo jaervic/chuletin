@@ -22,6 +22,40 @@ def load_prompt(name: str, default: str = "") -> str:
         return default
 
 
+STUDY_FILES = {
+    "summary": "study_summary.md",
+    "outline": "study_outline.md",
+    "deck": "study_cards.md",
+    "quiz": "study_quiz.md",
+}
+
+STUDY_EXTRA = {
+    "summary": "",
+    "outline": "",
+    "deck": " Devuelve unicamente el JSON pedido, sin markdown alrededor.",
+    "quiz": " Devuelve unicamente el JSON pedido, sin markdown alrededor.",
+}
+
+
+def study_system(kind: str) -> str:
+    return system_prompt() + STUDY_EXTRA.get(kind, "")
+
+
+def study_prompt(kind: str, context: str, topic: str | None, count: int) -> str:
+    filename = STUDY_FILES.get(kind)
+    if filename is None:
+        raise ValueError(f"Tipo de estudio no soportado: {kind}")
+    template = load_prompt(
+        filename,
+        "CONTEXTO:\n[[CONTEXT]]\n\nTEMA: [[TOPIC]]\n",
+    )
+    return (
+        template.replace("[[CONTEXT]]", context)
+        .replace("[[TOPIC]]", (topic or "").strip() or "todo el material")
+        .replace("[[COUNT]]", str(count))
+    )
+
+
 def system_prompt() -> str:
     return load_prompt("system.md", FALLBACK_SYSTEM)
 

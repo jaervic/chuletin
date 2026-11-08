@@ -132,6 +132,64 @@ export interface ProviderTest {
   models: string[];
 }
 
+export type StudyKind = "summary" | "outline" | "deck" | "quiz";
+export type StudyStatus = "generating" | "ready" | "error";
+
+export interface StudySet {
+  id: string;
+  subject_id: string;
+  kind: StudyKind;
+  title: string;
+  topic: string | null;
+  status: StudyStatus;
+  content: string | null;
+  provider: string | null;
+  model: string | null;
+  error: string | null;
+  score: number | null;
+  created_at: string;
+  updated_at: string;
+  card_count: number | null;
+  due_count: number | null;
+  item_count: number | null;
+  answered_count: number | null;
+}
+
+export interface StudyCard {
+  id: string;
+  set_id: string;
+  front: string;
+  back: string;
+  source_index: number | null;
+  ease: number;
+  interval_days: number;
+  repetitions: number;
+  lapses: number;
+  due_at: string;
+  created_at: string;
+  last_reviewed_at: string | null;
+}
+
+export interface QuizItem {
+  id: string;
+  set_id: string;
+  position: number;
+  question: string;
+  options: string[];
+  correct_index: number;
+  explanation: string | null;
+  source_index: number | null;
+  chosen_index: number | null;
+  is_correct: number | null;
+}
+
+export interface StudyDetail {
+  set: StudySet;
+  citations: Citation[];
+  cards?: StudyCard[];
+  items?: QuizItem[];
+}
+
 export interface ChatPayload {
   question: string;
   subject_id?: string | null;

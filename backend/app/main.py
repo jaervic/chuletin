@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import db
-from .api import chat, documents, health, settings_api, subjects
+from .api import chat, documents, health, settings_api, study, subjects
 from .config import settings
 from .llm import embeddings
 from .security.uploads import UploadRejected
@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Chuletin",
     description="Estudia con tus propios apuntes, con citas verificables.",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
     docs_url="/api/docs",
     redoc_url=None,
@@ -97,6 +97,7 @@ app.include_router(subjects.router)
 app.include_router(documents.router)
 app.include_router(chat.router)
 app.include_router(settings_api.router)
+app.include_router(study.router)
 
 
 def _mount_frontend() -> None:
@@ -107,7 +108,7 @@ def _mount_frontend() -> None:
         def api_root() -> dict:
             return {
                 "name": "Chuletin",
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "message": "El frontend no esta compilado. Ejecuta ./run.sh",
                 "docs": "/api/docs",
             }

@@ -21,7 +21,7 @@ except Exception:  # pragma: no cover - depende del entorno
     HAS_SQLITE_VEC = False
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS app_settings (
@@ -111,6 +111,66 @@ CREATE TABLE IF NOT EXISTS citations (
     snippet     TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_citations_message ON citations(message_id);
+
+CREATE TABLE IF NOT EXISTS study_sets (
+    id           TEXT PRIMARY KEY,
+    subject_id   TEXT NOT NULL REFERENCES subjects(id) ON DELETE CASCADE,
+    kind         TEXT NOT NULL,
+    title        TEXT NOT NULL,
+    topic        TEXT,
+    status       TEXT NOT NULL DEFAULT 'generating',
+    content      TEXT,
+    citations    TEXT,
+    document_ids TEXT,
+    provider     TEXT,
+    model        TEXT,
+    error        TEXT,
+    score        REAL,
+    created_at   TEXT NOT NULL,
+    updated_at   TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_study_sets_subject
+    ON study_sets(subject_id, kind, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS cards (
+    id               TEXT PRIMARY KEY,
+    set_id           TEXT NOT NULL REFERENCES study_sets(id) ON DELETE CASCADE,
+    front            TEXT NOT NULL,
+    back             TEXT NOT NULL,
+    source_index     INTEGER,
+    ease             REAL NOT NULL DEFAULT 2.5,
+    interval_days    INTEGER NOT NULL DEFAULT 0,
+    repetitions      INTEGER NOT NULL DEFAULT 0,
+    lapses           INTEGER NOT NULL DEFAULT 0,
+    due_at           TEXT NOT NULL,
+    created_at       TEXT NOT NULL,
+    last_reviewed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_cards_set ON cards(set_id);
+CREATE INDEX IF NOT EXISTS idx_cards_due ON cards(due_at);
+
+CREATE TABLE IF NOT EXISTS card_reviews (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    card_id        TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+    rating         INTEGER NOT NULL,
+    interval_after INTEGER NOT NULL,
+    ease_after     REAL NOT NULL,
+    reviewed_at    TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS quiz_items (
+    id            TEXT PRIMARY KEY,
+    set_id        TEXT NOT NULL REFERENCES study_sets(id) ON DELETE CASCADE,
+    position      INTEGER NOT NULL,
+    question      TEXT NOT NULL,
+    options       TEXT NOT NULL,
+    correct_index INTEGER NOT NULL,
+    explanation   TEXT,
+    source_index  INTEGER,
+    chosen_index  INTEGER,
+    is_correct    INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_quiz_items_set ON quiz_items(set_id, position);
 """
 
 

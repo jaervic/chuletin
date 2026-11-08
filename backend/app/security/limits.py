@@ -36,6 +36,7 @@ ingest_limiter = RateLimiter(capacity=6, refill_per_second=0.1)    # ~6/min
 write_limiter = RateLimiter(capacity=30, refill_per_second=1.0)    # ~90/min
 
 _ingest_semaphore: asyncio.Semaphore | None = None
+_study_semaphore: asyncio.Semaphore | None = None
 _semaphore_lock = threading.Lock()
 
 
@@ -46,6 +47,15 @@ def ingest_semaphore() -> asyncio.Semaphore:
         if _ingest_semaphore is None:
             _ingest_semaphore = asyncio.Semaphore(1)
         return _ingest_semaphore
+
+
+def study_semaphore() -> asyncio.Semaphore:
+    """Solo una generacion de estudio a la vez."""
+    global _study_semaphore
+    with _semaphore_lock:
+        if _study_semaphore is None:
+            _study_semaphore = asyncio.Semaphore(1)
+        return _study_semaphore
 
 
 def client_key(request) -> str:

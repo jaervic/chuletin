@@ -9,7 +9,7 @@ from ..config import settings
 
 router = APIRouter(prefix="/api", tags=["health"])
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 
 @router.get("/health")

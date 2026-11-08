@@ -56,6 +56,12 @@ class Settings(BaseSettings):
     min_similarity: float = 0.40
     llm_timeout_s: int = 120
 
+    # Estudio (resumenes, tarjetas y tests)
+    study_max_chunks: int = 12
+    study_max_chars: int = 22000
+    study_cards_default: int = 12
+    study_quiz_default: int = 8
+
     # OCR
     ocr_lang: str = "spa+eng"
     ocr_max_pages: int = 40

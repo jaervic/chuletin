@@ -16,6 +16,7 @@ import { Sidebar, type View } from "./components/Sidebar";
 import { ChatView } from "./components/ChatView";
 import { LibraryView, type UploadEntry } from "./components/LibraryView";
 import { SettingsView } from "./components/SettingsView";
+import { StudyView } from "./components/StudyView";
 import { SourcePanel } from "./components/SourcePanel";
 import { Banner, Chip, Spinner } from "./components/ui";
 import { locatorFor } from "./lib/format";
@@ -107,7 +108,7 @@ export default function App() {
     : documents;
 
   function navigate(next: View) {
-    if (next === "library" && !activeSubject && subjects.length > 0) {
+    if ((next === "library" || next === "study") && !activeSubject && subjects.length > 0) {
       setActiveSubject(subjects[0].id);
     }
     setView(next);
@@ -376,8 +377,13 @@ export default function App() {
   const titles: Record<View, string> = {
     chat: "Conversación",
     library: "Biblioteca",
+    study: "Estudiar",
     settings: "Ajustes",
   };
+
+  const providerReady = Boolean(
+    activeProvider && (!activeProvider.requires_key || activeProvider.has_key),
+  );
 
   return (
     <div className="paper-grain flex h-screen overflow-hidden bg-paper text-ink">
@@ -519,6 +525,15 @@ export default function App() {
               onDelete={removeDocument}
               onReindex={reindexDocument}
               uploads={uploads}
+            />
+          ) : view === "study" ? (
+            <StudyView
+              subject={subject}
+              subjects={subjects}
+              onSelectSubject={(id) => setActiveSubject(id)}
+              onCitation={(citation) => setSource(citation)}
+              onOpenSettings={() => navigate("settings")}
+              providerReady={providerReady}
             />
           ) : (
             <SettingsView

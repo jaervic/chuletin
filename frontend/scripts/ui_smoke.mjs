@@ -87,6 +87,80 @@ try {
   await page.screenshot({ path: `${shots}/chuletin-fuente.png`, fullPage: false });
 
   await page.getByRole("button", { name: "Cerrar", exact: true }).click();
+
+  // --- Estudiar: resumen ---
+  await page.getByRole("button", { name: "Estudiar" }).first().click();
+  await page.getByRole("heading", { name: "Material de repaso" }).waitFor();
+  await page.getByRole("button", { name: "Resumen", exact: true }).click();
+  await page.getByText("Ideas clave").waitFor({ timeout: 40000 });
+  check(true, "genera un resumen con citas");
+  await page.screenshot({ path: `${shots}/chuletin-resumen.png`, fullPage: false });
+
+  await page.getByRole("button", { name: "Volver a la lista" }).first().click();
+
+  // --- Estudiar: tarjetas ---
+  await page.getByRole("button", { name: "Tarjetas", exact: true }).click();
+  await page.getByRole("button", { name: "Generar tarjetas" }).click();
+  await page.getByText("Sesión de repaso").waitFor({ timeout: 40000 });
+  await page.getByRole("button", { name: /Repasar \d+ pendientes/ }).click();
+
+  for (let round = 0; round < 10; round += 1) {
+    if (await page.getByText("Sesión completada").count()) break;
+    const show = page.getByRole("button", { name: /Mostrar respuesta/ });
+    await show.click({ timeout: 15000 }).catch(() => undefined);
+    await page.waitForFunction(
+      () => {
+        const button = Array.from(document.querySelectorAll("button")).find((item) =>
+          (item.textContent ?? "").startsWith("Bien"),
+        );
+        return Boolean(button) && !button.disabled;
+      },
+      null,
+      { timeout: 15000 },
+    );
+    await page.getByRole("button", { name: /Bien/ }).first().click();
+    await page.waitForFunction(
+      () => {
+        if (document.body.innerText.includes("Sesión completada")) return true;
+        return Array.from(document.querySelectorAll("button")).some((item) =>
+          /Mostrar respuesta/.test(item.textContent ?? ""),
+        );
+      },
+      null,
+      { timeout: 15000 },
+    );
+  }
+  await page.getByText("Sesión completada").waitFor({ timeout: 15000 });
+  check(true, "repasa las tarjetas y completa la sesión");
+  await page.screenshot({ path: `${shots}/chuletin-tarjetas.png`, fullPage: false });
+
+  await page.getByRole("button", { name: "Volver a la lista" }).first().click();
+
+  // --- Estudiar: test ---
+  await page.getByRole("button", { name: "Tests", exact: true }).click();
+  await page.getByRole("button", { name: "Generar test" }).click();
+  await page.getByText(/Pregunta 1 de 4/).waitFor({ timeout: 40000 });
+
+  const answers = [
+    "Dos células hijas",
+    "Profase, metafase",
+    "Cateto, cateto",
+    "Membrana y material",
+  ];
+  for (let index = 0; index < answers.length; index += 1) {
+    await page.getByRole("button", { name: new RegExp(answers[index]) }).click();
+    await page.getByText("Correcto").waitFor();
+    if (index < answers.length - 1) {
+      await page.getByRole("button", { name: /Siguiente/ }).click();
+    }
+  }
+  await page.getByRole("button", { name: /Ver resultado/ }).click();
+  await page.getByText("100%").waitFor();
+  check(true, "completa un test con corrección");
+  await page.screenshot({ path: `${shots}/chuletin-test.png`, fullPage: false });
+
+  await page.getByRole("button", { name: "Volver a la lista" }).first().click();
+
   await page
     .getByRole("button", { name: "Cambiar a tema oscuro" })
     .click();
@@ -101,6 +175,10 @@ try {
 } catch (error) {
   problems.push(`excepción: ${error.message}`);
   console.error(error);
+  await page
+    .screenshot({ path: `${shots}/chuletin-fallo.png`, fullPage: false })
+    .catch(() => undefined);
+  console.log("botones en pantalla:", await page.getByRole("button").allTextContents());
 } finally {
   await browser.close();
 }

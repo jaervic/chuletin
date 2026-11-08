@@ -121,3 +121,21 @@ class ProviderTest(BaseModel):
     ok: bool
     message: str
     models: list[str] = []
+
+
+StudyKind = Literal["summary", "outline", "deck", "quiz"]
+
+
+class StudyCreate(BaseModel):
+    subject_id: str
+    kind: StudyKind
+    topic: str | None = Field(default=None, max_length=300)
+    document_ids: list[str] | None = None
+
+
+class CardReview(BaseModel):
+    rating: int = Field(ge=1, le=4)
+
+
+class QuizAnswer(BaseModel):
+    chosen_index: int = Field(ge=0, le=3)

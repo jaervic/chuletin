@@ -25,7 +25,7 @@ def temp_db(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "data_dir", tmp_path)
     monkeypatch.setattr(settings, "warmup", False)
     settings.ensure_dirs()
-    db.init_db(tmp_path / "test.db")
+    db.init_db(settings.database_path)
     yield tmp_path
     db.close_all()
 

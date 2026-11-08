@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   BookOpen,
+  GraduationCap,
   Library,
   MessageSquarePlus,
   Moon,
@@ -14,7 +15,7 @@ import type { ConversationSummary, Subject } from "../types";
 import { cx } from "./ui";
 import { timeAgo } from "../lib/format";
 
-export type View = "chat" | "library" | "settings";
+export type View = "chat" | "library" | "study" | "settings";
 
 export function Logo({ className }: { className?: string }) {
   return (
@@ -266,6 +267,19 @@ export function Sidebar({
         </button>
         <button
           type="button"
+          onClick={() => onNavigate("study")}
+          className={cx(
+            "flex w-full items-center gap-2 rounded-md px-2 py-2 text-[13px]",
+            view === "study"
+              ? "bg-accent-soft/70 text-ink"
+              : "text-muted hover:bg-accent-soft/40 hover:text-ink",
+          )}
+        >
+          <GraduationCap className="h-4 w-4" />
+          Estudiar
+        </button>
+        <button
+          type="button"
           onClick={() => onNavigate("settings")}
           className={cx(
             "flex w-full items-center gap-2 rounded-md px-2 py-2 text-[13px]",
@@ -280,7 +294,7 @@ export function Sidebar({
         <div className="mt-1 flex items-center justify-between rounded-md px-2 py-1">
           <span className="flex items-center gap-2 text-[12px] text-muted">
             <BookOpen className="h-3.5 w-3.5" />
-            v0.1.0
+            v0.2.0
           </span>
           <button
             type="button"

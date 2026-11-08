@@ -6,7 +6,12 @@ import type {
   DocumentItem,
   ProviderPreset,
   ProviderTest,
+  QuizItem,
   SettingsResponse,
+  StudyCard,
+  StudyDetail,
+  StudyKind,
+  StudySet,
   Subject,
 } from "../types";
 
@@ -165,6 +170,46 @@ export const api = {
       ),
     remove: (id: string) =>
       request<void>(`/conversations/${id}`, { method: "DELETE" }),
+  },
+
+  study: {
+    list: (subjectId: string, kind?: StudyKind) =>
+      request<StudySet[]>(
+        `/study/sets?subject_id=${encodeURIComponent(subjectId)}${
+          kind ? `&kind=${kind}` : ""
+        }`,
+      ),
+    create: (payload: {
+      subject_id: string;
+      kind: StudyKind;
+      topic?: string | null;
+      document_ids?: string[] | null;
+    }) =>
+      request<StudySet>("/study/sets", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    get: (id: string) => request<StudyDetail>(`/study/sets/${id}`),
+    remove: (id: string) =>
+      request<void>(`/study/sets/${id}`, { method: "DELETE" }),
+    reviewCard: (cardId: string, rating: 1 | 2 | 3 | 4) =>
+      request<StudyCard>(`/study/cards/${cardId}/review`, {
+        method: "POST",
+        body: JSON.stringify({ rating }),
+      }),
+    answer: (setId: string, itemId: string, chosenIndex: number) =>
+      request<QuizItem>(`/study/sets/${setId}/quiz/${itemId}`, {
+        method: "POST",
+        body: JSON.stringify({ chosen_index: chosenIndex }),
+      }),
+    resetQuiz: (setId: string) =>
+      request<{ ok: boolean }>(`/study/sets/${setId}/quiz/reset`, {
+        method: "POST",
+      }),
+    due: (subjectId: string) =>
+      request<{ subject_id: string; due: number }>(
+        `/study/due?subject_id=${encodeURIComponent(subjectId)}`,
+      ),
   },
 };
 

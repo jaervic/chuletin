@@ -19,9 +19,10 @@ MVP en desarrollo activo:
 - [x] Índice híbrido local (FTS5 + embeddings)
 - [x] Chat con respuestas en streaming y citas clicables
 - [x] Interfaz web con tema claro y oscuro, visor de PDF y panel de fuentes
-- [ ] Resúmenes y esquemas
-- [ ] Flashcards con repaso espaciado
-- [ ] Cuestionarios y simulacro de examen
+- [x] Resúmenes y esquemas con citas
+- [x] Flashcards con repaso espaciado (SM-2) y sesiones de repaso
+- [x] Tests de opción múltiple con corrección, explicación y puntuación
+- [ ] Simulacro de examen cronometrado
 - [ ] Plan de estudio
 
 ## Capturas
@@ -32,6 +33,10 @@ MVP en desarrollo activo:
 
 ![Panel de fuentes con visor de PDF](docs/screenshots/panel-fuente.png)
 
+| Resumen con fuentes | Sesión de tarjetas | Test corregido |
+|---|---|---|
+| ![Resumen](docs/screenshots/estudiar-resumen.png) | ![Tarjetas](docs/screenshots/estudiar-tarjetas.png) | ![Test](docs/screenshots/estudiar-test.png) |
+
 ## Qué incluye
 
 | Función | Detalle |
@@ -39,6 +44,7 @@ MVP en desarrollo activo:
 | Formatos | PDF, DOCX, PPTX, HTML, YouTube, TXT/MD e imágenes (OCR) |
 | Búsqueda | Híbrida: palabras clave (BM25) + vectores, fusionadas con RRF |
 | Citas | Documento, página, sección o minuto, con fragmento literal |
+| Estudio | Resúmenes, esquemas, tarjetas con repaso espaciado y tests de opción múltiple |
 | Proveedores | Gemini, DeepSeek, OpenAI, Anthropic, OpenRouter, Groq, Ollama y cualquier API compatible con OpenAI |
 | Privacidad | El índice y los embeddings se calculan en tu equipo; solo los fragmentos citados viajan al proveedor que elijas |
 | Seguridad | Protección SSRF, límites de subida, saneado de salida, detección de inyección de prompts, CI de seguridad |
